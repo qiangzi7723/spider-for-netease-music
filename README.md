@@ -4,6 +4,8 @@
 
 ### 实现思路
 
-观察到网易云音乐的内容都是由JS动态的插入iframe中的，所以需要一个能够执行JS的库。目前选用的方案是PhantomJs结合Node。
+观察到网易云音乐的内容都是由JS动态的插入iframe中的，所以需要一个能够执行JS的库。~~目前选用的方案是PhantomJs结合Node。~~
 
-Node起一个子进程让PhantomJs负责解析页面。
+~~Node起一个子进程让PhantomJs负责解析页面。~~
+
+采取Nightmare来实现iframe部分的处理。
