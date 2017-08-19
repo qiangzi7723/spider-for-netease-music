@@ -1,13 +1,8 @@
 const mysql = require("mysql");
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '1236',
-    database: 'netease',
-});
+const {database}=require('../config');
+const pool = mysql.createPool(database);
 
 const query = (sql, options, callback) => {
-    // console.log(sql);
     pool.getConnection((err, conn) => {
         if (err) {
             callback(err, null, null);

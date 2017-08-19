@@ -14,17 +14,15 @@ const query = require('./mysql');
 const {
     singerConfig
 } = require('./config');
-console.log(singerConfig);
 
 const singerList = singerConfig.list;
 const singerQueue = singerConfig.queue;
-const controlIframe = () => {
+const collectSinger = () => {
     async.mapLimit(singerList, 1, (item, cbItem) => {
         // 第一层循环各个歌手类型 如 华语男歌手该类型
         async.mapLimit(singerQueue, 1, (obj, cbObj) => {
             // 第二层循环歌手类型下对应的各个具体歌手 如 华语男歌手下的A-Z各个歌手
             // nightmare.goto('https://music.163.com/#/discover/artist/cat?id=1001&initial=65')
-            console.log(obj);
             nightmare.goto(singerConfig.common + '?' + 'id=' + item.id + '&' + 'initial=' + obj.index)
                 .enterIFrame('#g_iframe')
                 .evaluate(function () {
@@ -39,20 +37,17 @@ const controlIframe = () => {
                         const name = $(elm).text();
                         query("insert into singer(name,url,type,category,letter,id,initial) values(?,?,?,?,?,?,?)", [name, href, item.title, item.category, obj.letter, item.id, obj.index], (err, resp) => {
                             if (err) {
-                                console.log(elm);
                                 // 说明name重复了
-                                query("update singer set url=?,type=?,category=?,letter=?,id=?,initial=? where name=?", [href, item.title, item.category, obj.letter, item.id, obj.index, name], (errs, response) => {
-                                    if (errs) {
-                                    }
+                                query("update singer set url=?,type=?,category=?,letter=?,id=?,initial=? where name=?", [href, item.title, item.category, obj.letter, item.id, obj.index, name], (err, response) => {
                                 })
                             }
                         });
                         // 单个歌手抓取完毕 进行下一个歌手抓取
-                        console.log(item.title + ' ' + obj.letter + ' ' + name + ' 爬取完毕');
+                        // console.log(item.title + ' ' + obj.letter + ' ' + name + ' 爬取完毕');
                         cbElm();
                     })
                     // 当前首字母爬取完毕 回调 进行下一首字母的爬取
-                    console.log(item.title + ' ' + obj.letter + ' 爬取完毕');
+                    // console.log(item.title + ' ' + obj.letter + ' 爬取完毕');
                     nightmare.resetFrame();
                     cbObj();
                 });
@@ -63,12 +58,5 @@ const controlIframe = () => {
         })
 
     })
-
-
-
-
-
-
 }
-
-controlIframe();
+collectSinger();
