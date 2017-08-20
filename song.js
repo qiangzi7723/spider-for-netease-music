@@ -7,19 +7,23 @@ const async = require('async');
 const agent = require('superagent');
 const cheerio = require('cheerio');
 const query = require('./mysql');
+const moment = require('moment');
 const {
     singerConfig,
-    songConfig
+    songConfig,
+    key
 } = require('./config');
 const {
-    limitLength
+    limitLength,
+    splitId
 } = require('./util');
+const request = require('request');
 
 
 const collectSong = () => {
     let index = 1;
     async.whilst(() => {
-        return index <= 33952;
+        return index <= 31252;
     }, (cb) => {
         // 从数据库中获取歌手姓名以及URL 然后开始遍历歌曲
         query('select name,url from singer where singer=?', [index], (err, res) => {
@@ -39,29 +43,29 @@ const collectSong = () => {
                         const $ = cheerio.load(res);
                         const song = $('.txt a');
                         limitLength(song, 10); // 最多获取N首歌曲的评论
-                        async.mapLimit(song, 1, (item, cbItem) => {
+                        async.mapLimit(song, 1, (item, cbItem) => { // 并发数量N
                             // 遍历前N首歌曲 并且获取评论数量
                             const href = $(item).attr('href');
+                            const id = splitId(href);
                             const title = $(item).text();
-                            nightmare.resetFrame()
-                                .goto(songConfig.common + href) // 进入具体歌曲页面 获取评论数量
-                                .enterIFrame('#g_iframe')
-                                .evaluate(function () {
-                                    const comment = document.querySelector(".j-flag").innerText;
-                                    return comment;
-                                })
-                                .then(res => {
-                                    query('insert into song(title,comment,url,name,singer) values(?,?,?,?,?)', [title, res, href, singer.name, index], (err, response) => {
-                                        if (err) {
-                                            // 说明歌曲重复 进行update操作
-                                            query('update song set title=?,comment=?,name=?,singer=? where url=?', [title, res, singer.name, index, href], () => {
+                            const url = songConfig.comment + id + '?csrf_token='
+                            request.post({
+                                url,
+                                form: songConfig.key
+                            }, (err, res, body) => {
+                                const content = JSON.parse(body);
+                                const commet = content.total;
+                                query('insert into song(title,comment,url,name,singer) values(?,?,?,?,?)', [title, commet, href, singer.name, index], (err, response) => {
+                                    if (err) {
+                                        // 说明歌曲重复 进行update操作
+                                        query('update song set title=?,comment=?,name=?,singer=? where url=?', [title, commet, singer.name, index, href], () => {
 
-                                            });
-                                        }
-                                        // 插入数据完毕
-                                        cbItem();
-                                    })
+                                        });
+                                    }
+                                    // 插入数据完毕
+                                    cbItem();
                                 })
+                            })
                         }, () => {
                             console.log('歌手 ' + singer.name + ' 抓取完毕');
                             index++;

@@ -25,10 +25,6 @@ const singerConfig = {
         category: '欧美',
         id: '2003'
     }, {
-        title: '欧美组合/乐队',
-        category: '欧美',
-        id: '2003'
-    }, {
         title: '日本男歌手',
         category: '日本',
         id: '6001'
