@@ -21,7 +21,7 @@ const request = require('request');
 
 
 const collectSong = () => {
-    let index = 1;
+    let index = 5310;
     async.whilst(() => {
         return index <= 31252;
     }, (cb) => {
@@ -33,7 +33,10 @@ const collectSong = () => {
                     url: res[0].url.trim()
                 }
                 nightmare.resetFrame()
-                    .goto(songConfig.common + singer.url) // 进入歌曲列表页面
+                    .goto(songConfig.common + singer.url, {
+                        'Host': 'music.163.com',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
+                    }) // 进入歌曲列表页面
                     .enterIFrame('#g_iframe')
                     .evaluate(function () {
                         const content = document.querySelector("#artist-top50").innerHTML;
@@ -48,29 +51,42 @@ const collectSong = () => {
                             const href = $(item).attr('href');
                             const id = splitId(href);
                             const title = $(item).text();
-                            const url = songConfig.comment + id + '?csrf_token='
-                            request.post({
+                            const url = songConfig.comment + id + '?csrf_token=';
+                            const req = {
                                 url,
+                                method: 'post',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
+                                },
                                 form: songConfig.key
-                            }, (err, res, body) => {
-                                const content = JSON.parse(body);
-                                const commet = content.total;
-                                query('insert into song(title,comment,url,name,singer) values(?,?,?,?,?)', [title, commet, href, singer.name, index], (err, response) => {
-                                    if (err) {
-                                        // 说明歌曲重复 进行update操作
-                                        query('update song set title=?,comment=?,name=?,singer=? where url=?', [title, commet, singer.name, index, href], () => {
-
-                                        });
-                                    }
-                                    // 插入数据完毕
+                            }
+                            request(req, (err, res, body) => {
+                                if (body) {
+                                    const content = JSON.parse(body);
+                                    const commet = content.total;
+                                    query('insert into song(title,comment,url,name,singer) values(?,?,?,?,?)', [title, commet, href, singer.name, index], (err, response) => {
+                                        if (err) {
+                                            // 说明歌曲重复 进行update操作
+                                            query('update song set title=?,comment=?,name=?,singer=? where url=?', [title, commet, singer.name, index, href], () => {});
+                                        }
+                                        // 插入数据完毕
+                                        cbItem();
+                                    })
+                                } else {
                                     cbItem();
-                                })
+                                }
                             })
                         }, () => {
                             console.log('歌手 ' + singer.name + ' 抓取完毕');
                             index++;
                             cb();
                         })
+                    })
+                    .catch(err=>{
+                        // goto超时处理
+                        console.log(err,singer.name+' 请求超时 即将重新请求');
+                        cb();
                     })
             } else {
                 // 查询错误处理

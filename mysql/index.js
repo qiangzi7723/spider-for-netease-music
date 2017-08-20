@@ -1,5 +1,7 @@
 const mysql = require("mysql");
-const {database}=require('../config');
+const {
+    database
+} = require('../config');
 const pool = mysql.createPool(database);
 
 const query = (sql, options, callback) => {
@@ -8,8 +10,8 @@ const query = (sql, options, callback) => {
             callback(err, null, null);
         } else {
             conn.query(sql, options, (err, results, fields) => {
-                conn.release();
                 callback(err, results, fields);
+                conn.release();
             });
         }
     });

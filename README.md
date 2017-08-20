@@ -46,4 +46,32 @@ nightmare配合nightmare-iframe-manager处理了iframe页面的内容，成功�
 
 版本2 平均每首歌 0.1-0.4秒 30万首歌的评论需要 **16个小时**
 
-### 防屏蔽优化
+### 防屏蔽
+
+- 更换IP
+- 配置多组USER-AGENT以及encSecKey，随机更改
+- 伪装成为百度爬虫
+
+第一次跟第二次都是爬取了1万多数据后服务端开始返回503，到了后来返503的情况越来越频繁。所以尝试了更换本地的ip来进行爬取。
+
+刚刚尝试更换IP，但是数据库马上挂掉了，原因不明。
+
+另外发现晚上进行数据爬取不会被封禁，连IP都不需要更换。
+
+### 错误日志
+
+```
+Uncaught (in promise) 
+Object {
+    message: "navigation error", 
+    code: -7, 
+    details: "Navigation timed out after 30000 ms", 
+    url: "https://music.163.com/#/artist?id=7672"
+    }
+```
+分析
+
+由于网络问题导致该次请求不成功，没有处理timeout抛出的错误。
+
+
+### 环境配置

@@ -25,7 +25,13 @@ const common = 'https://music.163.com/weapi/v1/resource/comments/R_SO_4_';
 const collectSinger = () => {
     console.log(moment().format());
     nightmare.resetFrame()
-        .goto('https://music.163.com/#/artist?id=1876') // 进入歌曲列表页面
+        .goto('https://music.163.com/#/artist?id=1876', {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Host': 'music.163.com',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36',
+            'Connection': 'keep-alive',
+            'Origin': 'https://music.163.com'
+        }) // 进入歌曲列表页面
         .enterIFrame('#g_iframe')
         .evaluate(function () {
             const content = document.querySelector("#artist-top50").innerHTML;
@@ -41,13 +47,19 @@ const collectSinger = () => {
                 const href = $(item).attr('href').split('id=')[1];
                 const title = $(item).text();
                 console.log(common + href + '?csrf_token=');
-                request.post({
-                    url: common + href,
-                    form: {
-                        encSecKey: '2af4ca51b906def2e80755a34450db64e8a34f038ffa7ee66ae4c50fbaacc785eddcc1a63222928af3814c355f20b7f8d4e4b05f26879087acd1f8a4da79adaa4a59e3efb54c135017d7f94f7514603e208b0178f547f436c9ca11a3f45e27876c81c3f0a5d3a82854b9d39fdee0ac1b16ecd23503908595fc48359e0811f6d6',
-                        params: 'DQU/eyfHyqpTa40dLoNsxkRxCEmEsIgzAgKEYce7d5o78+o4DrdquhuTE5/h5PWqI027kSWd4Y1c9/h6mQFX8J9KiGI0zhV7hb6F7JzXjmg2wtky3SXDoXDn2IYKQnoF4mSXfjGtJdL9kA0KmJvNow=='
-                    }
-                }, function (err, httpResponse, body) {
+                const req = {
+                    url:common + href + '?csrf_token=',
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Host': 'music.163.com',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36',
+                        'Connection': 'keep-alive',
+                        'Origin': 'https://music.163.com'
+                    },
+                    form: songConfig.key
+                }
+                request(req, function (err, httpResponse, body) {
                     console.log(JSON.parse(body));
                     cbItem();
                 })
