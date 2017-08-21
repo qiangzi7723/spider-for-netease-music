@@ -1,0 +1,25 @@
+CREATE TABLE `singer` (
+  `singer` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '歌手唯一ID',
+  `name` char(255) DEFAULT NULL COMMENT '歌手姓名',
+  `url` char(255) DEFAULT NULL COMMENT '歌手对应歌曲页面的链接',
+  `type` char(255) DEFAULT NULL COMMENT '歌手类型',
+  `category` char(255) DEFAULT NULL COMMENT '歌手根类型',
+  `letter` char(255) DEFAULT NULL COMMENT '歌手首字母',
+  `id` char(255) DEFAULT NULL COMMENT '类型参数',
+  `initial` char(255) DEFAULT NULL COMMENT '首字母参数',
+  PRIMARY KEY (`singer`),
+  UNIQUE KEY `url` (`url`)
+) ENGINE=InnoDB AUTO_INCREMENT=31253 DEFAULT CHARSET=utf8;
+
+--------------------------------------------------------------
+
+CREATE TABLE `song` (
+  `song` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `title` char(255) DEFAULT NULL COMMENT '歌曲名称',
+  `comment` int(11) DEFAULT NULL COMMENT '评论数量',
+  `url` char(255) DEFAULT NULL,
+  `name` char(255) DEFAULT NULL COMMENT '歌曲对应的歌手',
+  `singer` int(11) DEFAULT NULL COMMENT '歌手ID',
+  PRIMARY KEY (`song`),
+  UNIQUE KEY `url` (`url`)
+) ENGINE=InnoDB AUTO_INCREMENT=158322 DEFAULT CHARSET=utf8;
