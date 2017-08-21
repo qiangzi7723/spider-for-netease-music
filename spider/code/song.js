@@ -47,7 +47,7 @@ const songCollect = () => {
                     .then(res => {
                         const $ = cheerio.load(res);
                         const song = $('.txt a');
-                        limitLength(song, 10); // 最多获取N首歌曲的评论
+                        limitLength(song, songConfig.len); // 最多获取N首歌曲的评论
                         async.mapLimit(song, 1, (item, cbItem) => { // 并发数量N
                             // 遍历前N首歌曲 并且获取评论数量
                             const href = $(item).attr('href');
