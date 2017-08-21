@@ -22,7 +22,7 @@ const {
 } = require('../util');
 
 
-let index = 17746; // 可作为断点位置
+let index = 19622; // 可作为断点位置
 
 const songCollect = () => {
     async.whilst(() => {

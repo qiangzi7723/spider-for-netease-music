@@ -29,12 +29,12 @@ const singerCollect = () => {
                     async.mapLimit(elms, 1, (elm, cbElm) => {
                         const href = $(elm).attr('href');
                         const name = $(elm).text();
-                        // query("insert into singer(name,url,type,category,letter,id,initial) values(?,?,?,?,?,?,?)", [name, href, item.title, item.category, obj.letter, item.id, obj.index], (err, resp) => {
-                        //     if (err) {
-                        //         // 说明name重复了
-                        //         query("update singer set url=?,type=?,category=?,letter=?,id=?,initial=? where name=?", [href, item.title, item.category, obj.letter, item.id, obj.index, name], (err, response) => {})
-                        //     }
-                        // });
+                        query("insert into singer(name,url,type,category,letter,id,initial) values(?,?,?,?,?,?,?)", [name, href, item.title, item.category, obj.letter, item.id, obj.index], (err, resp) => {
+                            if (err) {
+                                // 说明重复了
+                                query("update singer set url=?,type=?,category=?,letter=?,id=?,initial=? where name=?", [href, item.title, item.category, obj.letter, item.id, obj.index, name], (err, response) => {})
+                            }
+                        });
                         // 单个歌手抓取完毕 进行下一个歌手抓取
                         console.log(item.title + ' ' + obj.letter + ' ' + name + ' 爬取完毕');
                         cbElm();
