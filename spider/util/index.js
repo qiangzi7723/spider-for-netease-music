@@ -8,10 +8,7 @@ const splitId = (href) => {
     return href.split('?id=')[1];
 }
 
-let i=0;
 const notify = (title, message) => {
-    i++;
-    if(i>50) return;
     notifier.notify({
         'title': title,
         'message': message,
