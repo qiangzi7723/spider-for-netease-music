@@ -31,11 +31,10 @@
 │   ├── example.png
 │   └── singer.png
 ├── spider
-│   ├── app.js
 │   ├── code
 │   │   ├── index.js
-│   │   ├── singer.js
-│   │   └── song.js
+│   │   ├── singer.js // 爬虫逻辑
+│   │   └── song.js  // 爬虫逻辑
 │   ├── config
 │   │   ├── index.js
 │   │   ├── mysql.js
@@ -44,6 +43,8 @@
 │   │   └── 数据表结构.txt
 │   ├── mysql
 │   │   └── index.js
+│   ├── singer.js
+│   ├── song.js
 │   ├── package.json
 │   ├── test
 │   │   ├── test-nightmare-async.js
@@ -75,9 +76,9 @@
 
 ## 启动
 
-配置完成以及安装好依赖后，就可以启动项目了，通过`npm run singer.js`即可开始歌手信息的抓取，这个过程会比较快，一般不会存在什么问题。
+配置完成以及安装好依赖后，就可以启动项目了，通过`node singer.js`即可开始歌手信息的抓取，这个过程会比较快，一般不会存在什么问题。
 
-等待歌手信息抓取完毕后，通过`npm run song.js`就可以开始所有歌曲的抓取。
+等待歌手信息抓取完毕后，通过`node song.js`就可以开始所有歌曲的抓取。
 
 建议使用`devtool`运行，调试较为方便。
 
