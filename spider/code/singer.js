@@ -1,8 +1,3 @@
-const Nightmare = require('nightmare');
-require('nightmare-iframe-manager')(Nightmare);
-const nightmare = Nightmare({
-    electronPath: require('../node_modules/electron')
-});
 const async = require('async');
 const agent = require('superagent');
 const cheerio = require('cheerio');
@@ -17,14 +12,9 @@ const singerCollect = () => {
         // 第一层循环各个歌手类型 如 华语男歌手该类型
         async.mapLimit(singerConfig.queue, 1, (obj, cbObj) => {
             // 第二层循环歌手类型下对应的各个具体歌手 如 华语男歌手下的A-Z各个歌手
-            nightmare.goto(singerConfig.common + '?' + 'id=' + item.id + '&' + 'initial=' + obj.index)
-                .enterIFrame('#g_iframe')
-                .evaluate(function () {
-                    const content = document.querySelector("#m-artist-box").innerHTML;
-                    return content;
-                })
+            agent.get(singerConfig.common + '?' + 'id=' + item.id + '&' + 'initial=' + obj.index)
                 .then(res => {
-                    const $ = cheerio.load(res);
+                    const $ = cheerio.load(res.text);
                     const elms = $('li .s-fc0');
                     async.mapLimit(elms, 1, (elm, cbElm) => {
                         const href = $(elm).attr('href');
@@ -41,7 +31,6 @@ const singerCollect = () => {
                     }, () => {
                         // 当前字母歌手爬取完毕 回调 进行下一首字母的爬取
                         console.log(item.title + ' ' + obj.letter + ' 爬取完毕');
-                        nightmare.resetFrame();
                         cbObj();
                     })
 

@@ -1,5 +1,5 @@
 const singerConfig = {
-    common: 'https://music.163.com/#/discover/artist/cat',
+    common: 'https://music.163.com/discover/artist/cat',
     list: [{
         title: '华语男歌手',
         category: '华语',
