@@ -19,7 +19,7 @@ const {
 
 const songCollect = () => {
     query('select max(singer) from song', [], (err, res, rs) => {
-        let index = res[0]['max(singer)'] || 0;
+        let index = res[0]['max(singer)'] || 1;
         async.whilst(() => {
             return index <= 31252;
         }, (cb) => {
