@@ -1,0 +1,5 @@
+{
+  "appName": "app",
+  "env": "dev",
+  "mysql": "mysql://root:1236@localhost/puppeteer?charset=utf8mb4&timezone=-0700"
+}
